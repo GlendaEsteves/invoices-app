@@ -11,9 +11,7 @@ class InvoicesApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Invoices App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
+      theme: new ThemeData(scaffoldBackgroundColor: const Color(0x231F20)),
       home: const MyHomePage(title: ''),
     );
   }
