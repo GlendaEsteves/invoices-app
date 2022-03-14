@@ -1,4 +1,3 @@
-# invoices_app
+# Aplicativo de Invoices
 
-Projeto em andamento
-
+Projeto em conjunto em andamento para web e mobile
