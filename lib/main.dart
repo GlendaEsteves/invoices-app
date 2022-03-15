@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(const InvoicesApp());
@@ -32,23 +34,49 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: const Color.fromRGBO(30, 33, 56, 1),
+        backgroundColor: Color.fromRGBO(73, 78, 110, 100),
+        leading: Image.asset("assets/Slogan.png"),
         actions: [
+          const VerticalDivider(
+            width: 20,
+            thickness: 1,
+            indent: 0,
+            endIndent: 0,
+            color: Color.fromRGBO(133, 139, 178, 100),
+          ),
           Padding(
-              padding: EdgeInsets.only(right: 20.0),
+              padding: const EdgeInsets.only(right: 15),
               child: GestureDetector(
-                onTap: () {},
-                child: const Icon(
-                  Icons.person,
-                  size: 26.0,
-                ),
-              )),
+                  onTap: null,
+                  child: const SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: CircleAvatar(
+                          backgroundImage: AssetImage("assets/Oval.png")))))
         ],
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(30),
+              child: Column(
+                children: <Widget>[
+                  LayoutBuilder(builder: (context, constraints) {
+                    return Container(
+                      height: 400,
+                      width: 400,
+                      decoration: BoxDecoration(
+                          color: Color.fromRGBO(73, 78, 110, 100),
+                          border: Border.all(),
+                          borderRadius: BorderRadius.all(Radius.circular(20))),
+                    );
+                  })
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
