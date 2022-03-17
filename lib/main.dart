@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:invoices_app/screens/signup-screen.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const InvoicesApp());
@@ -104,6 +106,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
                                 style: TextStyle(color: Colors.white),
+                                obscureText: true,
+                                enableSuggestions: false,
+                                autocorrect: false,
                                 decoration: const InputDecoration(
                                     hintStyle: TextStyle(color: Colors.white),
                                     border: UnderlineInputBorder(),
@@ -130,7 +135,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: TextButton(
                                   style: TextButton.styleFrom(
                                       textStyle: GoogleFonts.spartan()),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SignUpScreen()));
+                                  },
                                   child: const Text(
                                     'Cadastre-se',
                                     style: TextStyle(
