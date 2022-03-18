@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:invoices_app/screens/signup-screen.dart';
 import 'package:http/http.dart' as http;
+import './models/user.dart';
 
 void main() {
   runApp(const InvoicesApp());
@@ -31,6 +34,16 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Future<User>? futureUsers;
+  List<User> _users = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUsers().then((value) => _users.add(value));
+    print(_users);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,8 +51,8 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
           backgroundColor: Color.fromRGBO(73, 78, 110, 100),
           leading: Image.asset("assets/Slogan.png"),
-          actions: [
-            const VerticalDivider(
+          actions: const [
+            VerticalDivider(
               width: 20,
               thickness: 1,
               indent: 0,
@@ -47,14 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Color.fromRGBO(133, 139, 178, 100),
             ),
             Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: GestureDetector(
-                    onTap: null,
-                    child: const SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: CircleAvatar(
-                            backgroundImage: AssetImage("assets/Oval.png")))))
+              padding: EdgeInsets.only(right: 15),
+              child: Icon(Icons.person),
+            )
           ],
         ),
         body: Center(
@@ -160,4 +168,28 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ));
   }
+}
+
+Future<User> createUser(
+    String fullName, String nickname, String email, String password) async {
+  final response = await http.post(
+    Uri.parse('https://chs-invoice-app-be.herokuapp.com/users'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'fullName': fullName,
+      'nickname': nickname,
+      'email': email,
+      'password': password,
+    }),
+  );
+  return User.fromJson(jsonDecode(response.body));
+}
+
+Future<User> fetchUsers() async {
+  final response = await http
+      .get(Uri.parse('https://chs-invoice-app-be.herokuapp.com/users'));
+
+  return User.fromJson(jsonDecode(response.body));
 }

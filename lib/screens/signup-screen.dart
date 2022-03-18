@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
+import 'package:invoices_app/main.dart';
+import 'package:invoices_app/models/user.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -10,14 +11,20 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _controllerFullName = TextEditingController();
+  final TextEditingController _controllerNickname = TextEditingController();
+  final TextEditingController _controllerEmail = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
+  Future<User>? _futureUser;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(73, 78, 110, 100),
           leading: Image.asset("assets/Slogan.png"),
-          actions: [
-            const VerticalDivider(
+          actions: const [
+            VerticalDivider(
               width: 20,
               thickness: 1,
               indent: 0,
@@ -25,14 +32,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
               color: Color.fromRGBO(133, 139, 178, 100),
             ),
             Padding(
-                padding: const EdgeInsets.only(right: 15),
-                child: GestureDetector(
-                    onTap: null,
-                    child: const SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: CircleAvatar(
-                            backgroundImage: AssetImage("assets/Oval.png")))))
+              padding: EdgeInsets.only(right: 15),
+              child: Icon(Icons.person),
+            )
           ],
         ),
         body: Center(
@@ -72,6 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerFullName,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: const InputDecoration(
                                     hintStyle: TextStyle(color: Colors.white),
@@ -83,6 +86,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerNickname,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: const InputDecoration(
                                     hintStyle: TextStyle(color: Colors.white),
@@ -94,6 +98,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerPassword,
                                 style: TextStyle(color: Colors.white),
                                 obscureText: true,
                                 enableSuggestions: false,
@@ -108,6 +113,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerEmail,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: const InputDecoration(
                                     hintStyle: TextStyle(color: Colors.white),
@@ -119,7 +125,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 16),
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    setState(() {
+                                      _futureUser = createUser(
+                                          _controllerFullName.text,
+                                          _controllerNickname.text,
+                                          _controllerEmail.text,
+                                          _controllerPassword.text);
+                                    });
+                                  },
                                   child: const Text(
                                     'Cadastrar',
                                     style: TextStyle(color: Colors.black),
@@ -135,7 +149,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               child: TextButton(
                                   style: TextButton.styleFrom(
                                       textStyle: GoogleFonts.spartan()),
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => MyHomePage(
+                                                  title: '',
+                                                )));
+                                  },
                                   child: const Text(
                                     'Login',
                                     style: TextStyle(
@@ -153,5 +174,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ));
+  }
+
+  FutureBuilder<User> buildFutureBuilder() {
+    return FutureBuilder<User>(
+      future: _futureUser,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return const Text('Cadastro Realizado');
+        } else if (snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+
+        return const CircularProgressIndicator();
+      },
+    );
   }
 }
