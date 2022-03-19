@@ -1,10 +1,11 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:invoices_app/models/login.dart';
+import 'package:invoices_app/models/user.dart';
+import 'package:invoices_app/screens/invoices-screen.dart';
 import 'package:invoices_app/screens/signup-screen.dart';
 import 'package:http/http.dart' as http;
-import './models/user.dart';
 
 void main() {
   runApp(const InvoicesApp());
@@ -34,15 +35,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<User>? futureUsers;
-  List<User> _users = [];
+  late Future<User> futureUser;
+  late Future<Login> futureUserInfo;
+  String userId = '';
 
-  @override
-  void initState() {
-    super.initState();
-    fetchUsers().then((value) => _users.add(value));
-    print(_users);
-  }
+  final TextEditingController _controllerNickname = TextEditingController();
+  final TextEditingController _controllerPassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerNickname,
                                 style: const TextStyle(color: Colors.white),
                                 decoration: const InputDecoration(
                                     hintStyle: TextStyle(color: Colors.white),
@@ -113,6 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
+                                controller: _controllerPassword,
                                 style: TextStyle(color: Colors.white),
                                 obscureText: true,
                                 enableSuggestions: false,
@@ -127,7 +127,26 @@ class _MyHomePageState extends State<MyHomePage> {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 16),
                                 child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    futureUser = loginUser(
+                                        _controllerNickname.text,
+                                        _controllerPassword.text);
+
+                                    var userIdAux = await futureUser;
+                                    userId = userIdAux.userId.toString();
+
+                                    futureUserInfo = fetchUser(userId);
+
+                                    var user = await futureUserInfo;
+                                    if (user.nickname ==
+                                        _controllerNickname.text) {
+                                      await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  InvoicesScreen()));
+                                    }
+                                  },
                                   child: const Text(
                                     'Entrar',
                                     style: TextStyle(color: Colors.black),
@@ -170,26 +189,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-Future<User> createUser(
-    String fullName, String nickname, String email, String password) async {
+Future<Login> fetchUser(String userId) async {
+  String baseUrl = ('https://chs-invoice-app-be.herokuapp.com/users/' + userId);
+  final response = await http.get(Uri.parse(baseUrl));
+  return Login.fromJson(jsonDecode(response.body));
+}
+
+Future<User> loginUser(String nickname, String password) async {
   final response = await http.post(
-    Uri.parse('https://chs-invoice-app-be.herokuapp.com/users'),
+    Uri.parse('https://chs-invoice-app-be.herokuapp.com/login'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, String>{
-      'fullName': fullName,
       'nickname': nickname,
-      'email': email,
       'password': password,
     }),
   );
-  return User.fromJson(jsonDecode(response.body));
-}
-
-Future<User> fetchUsers() async {
-  final response = await http
-      .get(Uri.parse('https://chs-invoice-app-be.herokuapp.com/users'));
-
   return User.fromJson(jsonDecode(response.body));
 }

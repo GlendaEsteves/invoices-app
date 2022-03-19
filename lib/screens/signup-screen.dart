@@ -1,7 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:invoices_app/main.dart';
-import 'package:invoices_app/models/user.dart';
+import 'package:invoices_app/models/signUp.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -15,7 +17,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _controllerNickname = TextEditingController();
   final TextEditingController _controllerEmail = TextEditingController();
   final TextEditingController _controllerPassword = TextEditingController();
-  Future<User>? _futureUser;
 
   @override
   Widget build(BuildContext context) {
@@ -126,13 +127,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     horizontal: 8, vertical: 16),
                                 child: ElevatedButton(
                                   onPressed: () {
-                                    setState(() {
-                                      _futureUser = createUser(
-                                          _controllerFullName.text,
-                                          _controllerNickname.text,
-                                          _controllerEmail.text,
-                                          _controllerPassword.text);
-                                    });
+                                    createUser(
+                                        _controllerFullName.text,
+                                        _controllerNickname.text,
+                                        _controllerEmail.text,
+                                        _controllerPassword.text);
                                   },
                                   child: const Text(
                                     'Cadastrar',
@@ -176,18 +175,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ));
   }
 
-  FutureBuilder<User> buildFutureBuilder() {
-    return FutureBuilder<User>(
-      future: _futureUser,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return const Text('Cadastro Realizado');
-        } else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-
-        return const CircularProgressIndicator();
+  Future<SignUp> createUser(
+      String fullName, String nickname, String email, String password) async {
+    final response = await http.post(
+      Uri.parse('https://chs-invoice-app-be.herokuapp.com/users'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
       },
+      body: jsonEncode(<String, String>{
+        'fullName': fullName,
+        'nickname': nickname,
+        'email': email,
+        'password': password,
+      }),
     );
+    return SignUp.fromJson(jsonDecode(response.body));
   }
 }

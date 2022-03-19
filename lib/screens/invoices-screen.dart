@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 
+import '../models/user.dart';
+
 class InvoicesScreen extends StatefulWidget {
-  const InvoicesScreen({Key? key}) : super(key: key);
+  InvoicesScreen({Key? key}) : super(key: key);
 
   @override
   State<InvoicesScreen> createState() => _InvoicesScreenState();
@@ -52,7 +56,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
                                 child: Column(
                                   children: [
                                     Text('Faturas'),
-                                    Text('0 Faturas')
+                                    Text('0 Faturas'),
                                   ],
                                 ),
                               ),
