@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:invoices_app/models/login.dart';
 import 'package:invoices_app/models/user.dart';
-import 'package:invoices_app/screens/invoices-screen.dart';
-import 'package:invoices_app/screens/signup-screen.dart';
+import 'package:invoices_app/screens/invoices_screen.dart';
+import 'package:invoices_app/screens/signup_screen.dart';
 import 'package:http/http.dart' as http;
 
 void main() {
-  runApp(const InvoicesApp());
+  runApp(InvoicesApp());
 }
 
 class InvoicesApp extends StatelessWidget {
